@@ -1,26 +1,400 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* 品牌色 - 金融蓝 */
+  --primary: 217 91% 50%;
+  --primary-foreground: 0 0% 100%;
+
+  /* 背景色 */
+  --background: 220 20% 97%;
+  --foreground: 222 47% 11%;
+
+  /* 卡片 */
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 11%;
+
+  /* 弹出层 */
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 47% 11%;
+
+  /* 次要色 */
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 222 47% 11%;
+
+  /* 静音色 */
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 46%;
+
+  /* 强调色 */
+  --accent: 217 91% 97%;
+  --accent-foreground: 217 91% 50%;
+
+  /* 危险色 */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* 边框 */
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 217 91% 50%;
+
+  /* 圆角 */
+  --radius: 0.625rem;
+
+  /* 溢价色 */
+  --premium-high: 15 90% 55%;
+  --premium-medium: 35 92% 50%;
+  --premium-low: 45 93% 47%;
+
+  /* 折价色 */
+  --discount-high: 160 84% 39%;
+  --discount-medium: 158 64% 52%;
+  --discount-low: 156 50% 60%;
+
+  /* 涨跌色 */
+  --up: 0 72% 51%;
+  --down: 142 71% 45%;
+
+  /* 图表色 */
+  --chart-1: 217 91% 50%;
+  --chart-2: 160 84% 39%;
+  --chart-3: 35 92% 50%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+}
+
+.dark {
+  /* 品牌色 - 金融蓝 */
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 11%;
+
+  /* 背景色 */
+  --background: 222 47% 8%;
+  --foreground: 210 40% 98%;
+
+  /* 卡片 */
+  --card: 222 47% 11%;
+  --card-foreground: 210 40% 98%;
+
+  /* 弹出层 */
+  --popover: 222 47% 11%;
+  --popover-foreground: 210 40% 98%;
+
+  /* 次要色 */
+  --secondary: 217 33% 17%;
+  --secondary-foreground: 210 40% 98%;
+
+  /* 静音色 */
+  --muted: 217 33% 17%;
+  --muted-foreground: 215 20% 65%;
+
+  /* 强调色 */
+  --accent: 217 33% 17%;
+  --accent-foreground: 217 91% 60%;
+
+  /* 危险色 */
+  --destructive: 0 62% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  /* 边框 */
+  --border: 217 33% 20%;
+  --input: 217 33% 20%;
+  --ring: 217 91% 60%;
+
+  /* 溢价色 */
+  --premium-high: 15 90% 60%;
+  --premium-medium: 35 92% 55%;
+  --premium-low: 45 93% 52%;
+
+  /* 折价色 */
+  --discount-high: 160 84% 45%;
+  --discount-medium: 158 64% 55%;
+  --discount-low: 156 50% 62%;
+
+  /* 涨跌色 */
+  --up: 0 72% 55%;
+  --down: 142 71% 50%;
+
+  /* 图表色 */
+  --chart-1: 217 91% 60%;
+  --chart-2: 160 84% 45%;
+  --chart-3: 35 92% 55%;
+  --chart-4: 280 65% 65%;
+  --chart-5: 340 75% 60%;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: hsl(var(--border));
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.35);
+}
+
+/* 紧凑表格样式 */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th {
+  text-align: left;
+  font-weight: 600;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 0.625rem 0.75rem;
+  background: hsl(var(--muted) / 0.5);
+}
+
+td {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+tr {
+  border-bottom: 1px solid hsl(var(--border) / 0.5);
+}
+
+tr:last-child {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: hsl(var(--accent) / 0.5);
+}
+
+/* 溢价率渐变样式 */
+.premium-extreme {
+  background: linear-gradient(135deg, hsl(var(--premium-high) / 0.2) 0%, hsl(var(--premium-high) / 0.1) 100%);
+  color: hsl(var(--premium-high));
+  font-weight: 600;
+}
+
+.premium-high {
+  background: linear-gradient(135deg, hsl(var(--premium-medium) / 0.15) 0%, hsl(var(--premium-medium) / 0.08) 100%);
+  color: hsl(var(--premium-medium));
+  font-weight: 600;
+}
+
+.premium-medium {
+  background: hsl(var(--premium-low) / 0.1);
+  color: hsl(var(--premium-low));
+  font-weight: 500;
+}
+
+.discount-extreme {
+  background: linear-gradient(135deg, hsl(var(--discount-high) / 0.2) 0%, hsl(var(--discount-high) / 0.1) 100%);
+  color: hsl(var(--discount-high));
+  font-weight: 600;
+}
+
+.discount-high {
+  background: linear-gradient(135deg, hsl(var(--discount-medium) / 0.15) 0%, hsl(var(--discount-medium) / 0.08) 100%);
+  color: hsl(var(--discount-medium));
+  font-weight: 600;
+}
+
+.discount-medium {
+  background: hsl(var(--discount-low) / 0.1);
+  color: hsl(var(--discount-low));
+  font-weight: 500;
+}
+
+/* 涨跌颜色 */
+.text-up {
+  color: hsl(var(--up));
+}
+
+.text-down {
+  color: hsl(var(--down));
+}
+
+/* 动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.2s ease-out;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s ease-in-out infinite;
+}
+
+/* 卡片悬浮效果 */
+.card-hover {
+  transition: all 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -5px hsl(var(--foreground) / 0.1);
+}
+
+/* 数据高亮行 */
+.highlight-row {
+  position: relative;
+}
+
+.highlight-row::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: hsl(var(--primary));
+  border-radius: 0 2px 2px 0;
+}
+
+/* 统计卡片图标背景 */
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stat-icon-blue {
+  background: linear-gradient(135deg, hsl(217 91% 50% / 0.15) 0%, hsl(217 91% 50% / 0.05) 100%);
+  color: hsl(217 91% 50%);
+}
+
+.stat-icon-purple {
+  background: linear-gradient(135deg, hsl(280 65% 60% / 0.15) 0%, hsl(280 65% 60% / 0.05) 100%);
+  color: hsl(280 65% 60%);
+}
+
+.stat-icon-orange {
+  background: linear-gradient(135deg, hsl(var(--premium-high) / 0.15) 0%, hsl(var(--premium-high) / 0.05) 100%);
+  color: hsl(var(--premium-high));
+}
+
+.stat-icon-green {
+  background: linear-gradient(135deg, hsl(var(--discount-high) / 0.15) 0%, hsl(var(--discount-high) / 0.05) 100%);
+  color: hsl(var(--discount-high));
+}
+
+.stat-icon-red {
+  background: linear-gradient(135deg, hsl(0 72% 51% / 0.15) 0%, hsl(0 72% 51% / 0.05) 100%);
+  color: hsl(0 72% 51%);
+}
+
+.stat-icon-indigo {
+  background: linear-gradient(135deg, hsl(234 89% 64% / 0.15) 0%, hsl(234 89% 64% / 0.05) 100%);
+  color: hsl(234 89% 64%);
+}
+
+/* 深色模式下的统计卡片图标 */
+.dark .stat-icon-blue {
+  background: linear-gradient(135deg, hsl(217 91% 60% / 0.2) 0%, hsl(217 91% 60% / 0.08) 100%);
+  color: hsl(217 91% 65%);
+}
+
+.dark .stat-icon-purple {
+  background: linear-gradient(135deg, hsl(280 65% 65% / 0.2) 0%, hsl(280 65% 65% / 0.08) 100%);
+  color: hsl(280 65% 70%);
+}
+
+.dark .stat-icon-orange {
+  background: linear-gradient(135deg, hsl(var(--premium-high) / 0.2) 0%, hsl(var(--premium-high) / 0.08) 100%);
+  color: hsl(var(--premium-high));
+}
+
+.dark .stat-icon-green {
+  background: linear-gradient(135deg, hsl(var(--discount-high) / 0.2) 0%, hsl(var(--discount-high) / 0.08) 100%);
+  color: hsl(var(--discount-high));
+}
+
+.dark .stat-icon-red {
+  background: linear-gradient(135deg, hsl(0 72% 55% / 0.2) 0%, hsl(0 72% 55% / 0.08) 100%);
+  color: hsl(0 72% 60%);
+}
+
+.dark .stat-icon-indigo {
+  background: linear-gradient(135deg, hsl(234 89% 70% / 0.2) 0%, hsl(234 89% 70% / 0.08) 100%);
+  color: hsl(234 89% 75%);
 }

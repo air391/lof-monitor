@@ -23,8 +23,8 @@ LOF 基金套利监控系统 - 实时追踪 LOF 基金溢价率，发现套利�
 
 ```bash
 # 克隆项目
-git clone https://github.com/slicenferqin/lof-monitor-frontend.git
-cd lof-monitor-frontend
+git clone https://github.com/slicenferqin/lof-monitor.git
+cd lof-monitor
 
 # 一键启动
 docker compose up -d

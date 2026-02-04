@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build
+.next/
+out/
+
+# Misc
+.DS_Store
+*.pem
+*.log
+*.tar.gz
+
+# Env
+.env*
+
+# IDE
+.idea/
+.vscode/
+
+# Claude
+.claude/

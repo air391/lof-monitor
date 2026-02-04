@@ -1,87 +1,102 @@
-# LOF Monitor Frontend
+# LOF Monitor
 
-LOF 基金套利监控系统的前端界面，实时追踪 LOF 基金溢价率，发现套利机会。
+LOF 基金套利监控系统 - 实时追踪 LOF 基金溢价率，发现套利机会。
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.109-009688)
+![Python](https://img.shields.io/badge/Python-3.11-blue)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
 ## Features
 
 - 实时显示 390+ 只 LOF 基金溢价率
 - 自定义监控规则（溢价/折价阈值告警）
+- Webhook 通知（企业微信、钉钉、飞书）
 - 深色/浅色主题切换
 - 一键导出 CSV 数据
-- 响应式设计，支持移动端
+- Docker 一键部署
 
 ## Quick Start
 
-### 1. 克隆项目
+### 方式一：Docker 部署（推荐）
 
 ```bash
-git clone https://github.com/slicenfer/lof-monitor-frontend.git
+# 克隆项目
+git clone https://github.com/slicenferqin/lof-monitor-frontend.git
 cd lof-monitor-frontend
+
+# 一键启动
+docker compose up -d
+
+# 访问
+# 前端: http://localhost:3000
+# API:  http://localhost:8000/docs
 ```
 
-### 2. 安装依赖
+### 方式二：本地开发
+
+**1. 启动后端**
 
 ```bash
-npm install
-# 或
-pnpm install
-```
-
-### 3. 启动后端 API
-
-本项目需要配合 [LOF-Monitor](https://github.com/slicenfer/LOF-Monitor) 后端使用：
-
-```bash
-# 克隆后端项目
-git clone https://github.com/slicenfer/LOF-Monitor.git
-cd LOF-Monitor
-
-# 安装 Python 依赖
+cd backend
 pip install -r requirements.txt
-
-# 启动 API 服务
 python api_server.py
 ```
 
-API 默认运行在 `http://localhost:8000`
-
-### 4. 启动前端
+**2. 启动前端**
 
 ```bash
+npm install
 npm run dev
 ```
 
-访问 `http://localhost:3000` 即可使用。
-
-## Tech Stack
-
-- **Framework**: Next.js 16 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 4
-- **UI Components**: Radix UI
-- **Icons**: Lucide React
+访问 `http://localhost:3000`
 
 ## Project Structure
 
 ```
-src/
-├── app/           # 页面路由
-│   ├── page.tsx   # 首页 - 基金列表
-│   ├── settings/  # 设置页面
-│   └── api/       # API 路由
-├── components/    # React 组件
-│   └── ui/        # 基础 UI 组件
-└── lib/           # 工具函数
+lof-monitor-frontend/
+├── src/                  # Next.js 前端
+│   ├── app/              # 页面路由
+│   ├── components/       # React 组件
+│   └── lib/              # 工具函数
+├── backend/              # Python 后端
+│   ├── api_server.py     # FastAPI 服务
+│   ├── app.py            # 数据获取逻辑
+│   ├── monitor_engine.py # 监控引擎
+│   └── webhook_sender.py # 通知发送
+├── docker-compose.yml    # Docker 编排
+└── Dockerfile            # 前端镜像
 ```
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/lof-data` | 获取所有 LOF 基金数据 |
+| GET | `/api/rules` | 获取监控规则列表 |
+| POST | `/api/rules` | 创建监控规则 |
+| DELETE | `/api/rules/{id}` | 删除监控规则 |
+| POST | `/api/rules/{id}/toggle` | 启用/禁用规则 |
+
+## Tech Stack
+
+**Frontend**
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS 4
+- Radix UI
+
+**Backend**
+- Python 3.11
+- FastAPI
+- Akshare (数据源)
+- Pandas
 
 ## Configuration
 
-创建 `.env.local` 文件配置 API 地址（可选）：
+创建 `.env.local` 配置环境变量：
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:8000

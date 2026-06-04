@@ -14,7 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MonitorRule } from "@/lib/types"
 import { X, Loader2 } from "lucide-react"
-import { getApiUrl, fetchWithAuth } from "@/lib/api"
+import { fetchWithAuth } from "@/lib/api"
 
 interface CreateRuleDialogProps {
   isOpen: boolean
@@ -53,12 +53,8 @@ export function CreateRuleDialog({ isOpen, onClose, onSuccess, funds, apiToken }
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/rules', {
+      const response = await fetchWithAuth('/api/rules', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Token': apiToken
-        },
         body: JSON.stringify(formData)
       })
 

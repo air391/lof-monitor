@@ -12,7 +12,7 @@ os.environ['https_proxy'] = ''
 os.environ['NO_PROXY'] = '*.eastmoney.com,push2.eastmoney.com,fundf10.eastmoney.com,emdata.eastmoney.com,localhost,127.0.0.1'
 os.environ['no_proxy'] = '*.eastmoney.com,push2.eastmoney.com,fundf10.eastmoney.com,emdata.eastmoney.com,localhost,127.0.0.1'
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -37,6 +37,26 @@ app.add_middleware(
 )
 
 logger.info("🚀 LOF基金API服务器启动中...")
+
+# API Token鉴权
+_API_TOKEN = os.environ.get('API_TOKEN', '')
+if _API_TOKEN:
+    logger.info("✅ API_TOKEN 已配置，规则管理接口将启用鉴权")
+else:
+    logger.warning("⚠️  未配置 API_TOKEN，规则管理接口无需鉴权（仅限受信网络使用）")
+
+async def verify_token(authorization: Optional[str] = Header(None)):
+    """校验 Authorization: ****** 请求头"""
+    if not _API_TOKEN:
+        return  # 未配置TOKEN时跳过验证
+    if not authorization or not authorization.startswith('Bearer '):
+        raise HTTPException(
+            status_code=401,
+            detail="未授权：请在请求头中提供 Authorization: ******"
+        )
+    token = authorization.split(' ', 1)[1]
+    if token != _API_TOKEN:
+        raise HTTPException(status_code=401, detail="无效的 API Token")
 
 @app.get("/")
 async def root():
@@ -129,7 +149,7 @@ async def get_lof_data():
             status_code=500
         )
 
-@app.get("/api/rules")
+@app.get("/api/rules", dependencies=[Depends(verify_token)])
 async def get_rules():
     """获取所有监控规则"""
     try:
@@ -156,7 +176,7 @@ class RuleCreate(BaseModel):
     webhookType: str
     throttleMinutes: int
 
-@app.post("/api/rules")
+@app.post("/api/rules", dependencies=[Depends(verify_token)])
 async def create_rule_endpoint(rule: RuleCreate):
     """创建新规则"""
     try:
@@ -188,7 +208,7 @@ async def create_rule_endpoint(rule: RuleCreate):
             status_code=500
         )
 
-@app.delete("/api/rules/{rule_id}")
+@app.delete("/api/rules/{rule_id}", dependencies=[Depends(verify_token)])
 async def delete_rule_endpoint(rule_id: str):
     """删除规则"""
     try:
@@ -211,7 +231,7 @@ async def delete_rule_endpoint(rule_id: str):
             status_code=500
         )
 
-@app.post("/api/rules/{rule_id}/toggle")
+@app.post("/api/rules/{rule_id}/toggle", dependencies=[Depends(verify_token)])
 async def toggle_rule_endpoint(rule_id: str):
     """切换规则启用/禁用状态"""
     try:

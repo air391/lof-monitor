@@ -4,6 +4,7 @@ import { MonitorRule } from "@/lib/types"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Bell, BellOff, Plus, Trash2, Edit } from "lucide-react"
+import { fetchWithAuth } from "@/lib/api"
 
 interface MonitorRulesProps {
   rules: MonitorRule[]
@@ -21,11 +22,8 @@ export function MonitorRules({ rules, onRefresh, onCreateRule, apiToken }: Monit
     }
     
     try {
-      const response = await fetch(`http://localhost:8000/api/rules/${ruleId}/toggle`, {
+      const response = await fetchWithAuth(`/api/rules/${ruleId}/toggle`, {
         method: 'POST',
-        headers: {
-          'X-API-Token': apiToken
-        }
       })
       
       if (response.ok) {
@@ -49,11 +47,8 @@ export function MonitorRules({ rules, onRefresh, onCreateRule, apiToken }: Monit
     }
     
     try {
-      const response = await fetch(`http://localhost:8000/api/rules/${ruleId}`, {
+      const response = await fetchWithAuth(`/api/rules/${ruleId}`, {
         method: 'DELETE',
-        headers: {
-          'X-API-Token': apiToken
-        }
       })
       
       if (response.ok) {

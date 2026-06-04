@@ -28,7 +28,7 @@ export const fetchWithAuth = async (endpoint: string, options?: RequestInit) => 
 
   const headers = {
     'Content-Type': 'application/json',
-    ...(token && { 'X-API-Token': token }),
+    ...(token && { 'Authorization': 'Bearer ' + token }),
     ...options?.headers,
   }
 

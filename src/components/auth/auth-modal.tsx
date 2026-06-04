@@ -43,7 +43,7 @@ export function AuthModal({ isOpen, onClose, onLoginSuccess }: AuthModalProps) {
         throw new Error('验证失败，请检查后端服务是否正常运行')
       }
 
-      onLoginSuccess(token.trim(), 'admin')
+      onLoginSuccess(token.trim(), '已认证')
       setToken('')
       onClose()
     } catch (err: any) {

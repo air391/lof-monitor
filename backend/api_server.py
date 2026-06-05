@@ -159,12 +159,37 @@ async def get_rules():
         from monitor_engine import load_rules
         
         rules = load_rules()
-        return {"rules": rules}
+        return {"rules": [serialize_rule(r) for r in rules]}
     except Exception as e:
         return JSONResponse(
             {"error": f"获取规则失败: {str(e)}"},
             status_code=500
         )
+
+def serialize_rule(rule: dict) -> dict:
+    """将后端 snake_case 规则对象转换为前端期望的 camelCase 格式"""
+    condition = rule.get('condition', {})
+    notification = rule.get('notification', {})
+    return {
+        "id": rule.get('rule_id', ''),
+        "name": rule.get('rule_name', ''),
+        "fundCode": rule.get('fund_code', ''),
+        "fundName": rule.get('fund_name', ''),
+        "enabled": rule.get('enabled', True),
+        "condition": {
+            "premiumAbove": condition.get('premium_above'),
+            "premiumBelow": condition.get('premium_below'),
+            "amountAbove": condition.get('amount_above'),
+        },
+        "notification": {
+            "webhookUrl": notification.get('webhook_url', ''),
+            "webhookType": notification.get('webhook_type', 'custom'),
+            "throttleMinutes": notification.get('throttle_minutes', 60),
+        },
+        "createdAt": rule.get('created_at', ''),
+        "lastTriggered": rule.get('last_triggered'),
+        "triggerCount": rule.get('trigger_count', 0),
+    }
 
 class RuleCreate(BaseModel):
     name: str
@@ -201,7 +226,7 @@ async def create_rule_endpoint(rule: RuleCreate):
         }
         
         new_rule = create_rule(rule_data)
-        return {"rule": new_rule, "message": "规则创建成功"}
+        return {"rule": serialize_rule(new_rule), "message": "规则创建成功"}
     except Exception as e:
         return JSONResponse(
             {"error": f"创建规则失败: {str(e)}"},
@@ -242,7 +267,7 @@ async def toggle_rule_endpoint(rule_id: str):
         
         rule = toggle_rule(rule_id)
         if rule:
-            return {"rule": rule, "message": "规则状态已更新"}
+            return {"rule": serialize_rule(rule), "message": "规则状态已更新"}
         else:
             return JSONResponse(
                 {"error": "规则不存在"},

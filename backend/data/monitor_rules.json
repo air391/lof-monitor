@@ -1,0 +1,21 @@
+[
+  {
+    "rule_id": "b6dc626a-9ac8-4cb1-851d-98242679fe6b",
+    "enabled": true,
+    "created_at": "2026-06-05T04:30:54.210121",
+    "last_triggered": null,
+    "trigger_count": 0,
+    "rule_name": "Deploy Test Rule",
+    "fund_code": "160119",
+    "fund_name": "白酒ETF",
+    "condition": {
+      "premium_above": 2.0,
+      "amount_above": 50.0
+    },
+    "notification": {
+      "webhook_url": "https://example.com/hook",
+      "webhook_type": "wechat",
+      "throttle_minutes": 60
+    }
+  }
+]

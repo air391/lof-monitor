@@ -10,7 +10,7 @@
     "fund_name": "白酒ETF",
     "condition": {
       "premium_above": 2.0,
-      "amount_above": 50.0
+      "amount_above": 500000.0
     },
     "notification": {
       "webhook_url": "https://example.com/hook",

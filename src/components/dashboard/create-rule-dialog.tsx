@@ -24,6 +24,9 @@ interface CreateRuleDialogProps {
   apiToken: string
 }
 
+// 万元到元的换算因子（后端场内成交额单位为元）
+const WAN_YUAN_TO_YUAN = 10000
+
 export function CreateRuleDialog({ isOpen, onClose, onSuccess, funds, apiToken }: CreateRuleDialogProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -57,7 +60,7 @@ export function CreateRuleDialog({ isOpen, onClose, onSuccess, funds, apiToken }
         method: 'POST',
         body: JSON.stringify({
           ...formData,
-          amountAbove: formData.amountAbove * 10000  // 万元→元，与后端场内成交额单位（元）一致
+          amountAbove: formData.amountAbove * WAN_YUAN_TO_YUAN  // 万元→元，与后端场内成交额单位（元）一致
         })
       })
 

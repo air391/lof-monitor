@@ -45,16 +45,16 @@ if _API_TOKEN:
 else:
     logger.warning("⚠️  未配置 API_TOKEN，规则管理接口无需鉴权（仅限受信网络使用）")
 
-async def verify_token(authorization: Optional[str] = Header(None)):
+async def verify_token(authorization_header: Optional[str] = Header(None, alias="Authorization")):
     """校验 Authorization: ****** 请求头"""
     if not _API_TOKEN:
         return  # 未配置TOKEN时跳过验证
-    if not authorization or not authorization.startswith('Bearer '):
+    if not authorization_header or not authorization_header.startswith('Bearer '):
         raise HTTPException(
             status_code=401,
             detail="未授权：请在请求头中提供 Authorization: ******"
         )
-    token = authorization.split(' ', 1)[1]
+    token = authorization_header.split(' ', 1)[1]
     if token != _API_TOKEN:
         raise HTTPException(status_code=401, detail="无效的 API Token")
 

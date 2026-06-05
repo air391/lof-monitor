@@ -76,16 +76,13 @@ async def root():
 async def get_lof_data():
     """获取LOF基金数据（含溢价率）"""
     try:
-        # 导入数据获取模块
         import sys
         import os
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-        
-        from app import get_lof_spot_data, get_all_nav_data, merge_and_calculate, configure_proxy, ensure_cache_dir
+
+        from lof_data import get_lof_spot_data, get_all_nav_data, merge_and_calculate, ensure_cache_dir
         import pandas as pd
-        
-        # 配置代理和缓存
-        configure_proxy()
+
         ensure_cache_dir()
         
         logger.info("正在获取LOF场内实时行情...")

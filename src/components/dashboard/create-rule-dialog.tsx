@@ -55,7 +55,10 @@ export function CreateRuleDialog({ isOpen, onClose, onSuccess, funds, apiToken }
     try {
       const response = await fetchWithAuth('/api/rules', {
         method: 'POST',
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          amountAbove: formData.amountAbove * 10000  // 万元→元，与后端场内成交额单位（元）一致
+        })
       })
 
       const data = await response.json()

@@ -1,5 +1,5 @@
 // API配置
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://8.152.170.227:8000'
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
 
 export const API_ENDPOINTS = {
   // 公开API
@@ -28,7 +28,7 @@ export const fetchWithAuth = async (endpoint: string, options?: RequestInit) => 
 
   const headers = {
     'Content-Type': 'application/json',
-    ...(token && { 'X-API-Token': token }),
+    ...(token && { 'Authorization': 'Bearer ' + token }),
     ...options?.headers,
   }
 

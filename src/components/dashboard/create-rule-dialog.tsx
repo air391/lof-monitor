@@ -14,7 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MonitorRule } from "@/lib/types"
 import { X, Loader2 } from "lucide-react"
-import { getApiUrl, fetchWithAuth } from "@/lib/api"
+import { fetchWithAuth } from "@/lib/api"
 
 interface CreateRuleDialogProps {
   isOpen: boolean
@@ -23,6 +23,9 @@ interface CreateRuleDialogProps {
   funds: Array<{ code: string; name: string }>
   apiToken: string
 }
+
+// 万元到元的换算因子（后端场内成交额单位为元）
+const WAN_YUAN_TO_YUAN = 10000
 
 export function CreateRuleDialog({ isOpen, onClose, onSuccess, funds, apiToken }: CreateRuleDialogProps) {
   const [loading, setLoading] = useState(false)
@@ -53,13 +56,12 @@ export function CreateRuleDialog({ isOpen, onClose, onSuccess, funds, apiToken }
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/rules', {
+      const response = await fetchWithAuth('/api/rules', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-API-Token': apiToken
-        },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          amountAbove: formData.amountAbove * WAN_YUAN_TO_YUAN  // 万元→元，与后端场内成交额单位（元）一致
+        })
       })
 
       const data = await response.json()

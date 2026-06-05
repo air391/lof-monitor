@@ -12,7 +12,7 @@ os.environ['https_proxy'] = ''
 os.environ['NO_PROXY'] = '*.eastmoney.com,push2.eastmoney.com,fundf10.eastmoney.com,emdata.eastmoney.com,localhost,127.0.0.1'
 os.environ['no_proxy'] = '*.eastmoney.com,push2.eastmoney.com,fundf10.eastmoney.com,emdata.eastmoney.com,localhost,127.0.0.1'
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Header, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -38,6 +38,26 @@ app.add_middleware(
 
 logger.info("🚀 LOF基金API服务器启动中...")
 
+# API Token鉴权
+_API_TOKEN = os.environ.get('API_TOKEN', '')
+if _API_TOKEN:
+    logger.info("✅ API_TOKEN 已配置，规则管理接口将启用鉴权")
+else:
+    logger.warning("⚠️  未配置 API_TOKEN，规则管理接口无需鉴权（仅限受信网络使用）")
+
+async def verify_token(authorization_header: Optional[str] = Header(None, alias="Authorization")):
+    """校验 Authorization: ****** 请求头"""
+    if not _API_TOKEN:
+        return  # 未配置TOKEN时跳过验证
+    if not authorization_header or not authorization_header.startswith('Bearer '):
+        raise HTTPException(
+            status_code=401,
+            detail="未授权：请在请求头中提供 Authorization: ******"
+        )
+    token = authorization_header.split(' ', 1)[1]
+    if token != _API_TOKEN:
+        raise HTTPException(status_code=401, detail="无效的 API Token")
+
 @app.get("/")
 async def root():
     """健康检查"""
@@ -56,16 +76,13 @@ async def root():
 async def get_lof_data():
     """获取LOF基金数据（含溢价率）"""
     try:
-        # 导入数据获取模块
         import sys
         import os
         sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-        
-        from app import get_lof_spot_data, get_all_nav_data, merge_and_calculate, configure_proxy, ensure_cache_dir
+
+        from lof_data import get_lof_spot_data, get_all_nav_data, merge_and_calculate, ensure_cache_dir
         import pandas as pd
-        
-        # 配置代理和缓存
-        configure_proxy()
+
         ensure_cache_dir()
         
         logger.info("正在获取LOF场内实时行情...")
@@ -129,7 +146,7 @@ async def get_lof_data():
             status_code=500
         )
 
-@app.get("/api/rules")
+@app.get("/api/rules", dependencies=[Depends(verify_token)])
 async def get_rules():
     """获取所有监控规则"""
     try:
@@ -139,12 +156,37 @@ async def get_rules():
         from monitor_engine import load_rules
         
         rules = load_rules()
-        return {"rules": rules}
+        return {"rules": [serialize_rule(r) for r in rules]}
     except Exception as e:
         return JSONResponse(
             {"error": f"获取规则失败: {str(e)}"},
             status_code=500
         )
+
+def serialize_rule(rule: dict) -> dict:
+    """将后端 snake_case 规则对象转换为前端期望的 camelCase 格式"""
+    condition = rule.get('condition', {})
+    notification = rule.get('notification', {})
+    return {
+        "id": rule.get('rule_id', ''),
+        "name": rule.get('rule_name', ''),
+        "fundCode": rule.get('fund_code', ''),
+        "fundName": rule.get('fund_name', ''),
+        "enabled": rule.get('enabled', True),
+        "condition": {
+            "premiumAbove": condition.get('premium_above'),
+            "premiumBelow": condition.get('premium_below'),
+            "amountAbove": condition.get('amount_above'),
+        },
+        "notification": {
+            "webhookUrl": notification.get('webhook_url', ''),
+            "webhookType": notification.get('webhook_type', 'custom'),
+            "throttleMinutes": notification.get('throttle_minutes', 60),
+        },
+        "createdAt": rule.get('created_at', ''),
+        "lastTriggered": rule.get('last_triggered'),
+        "triggerCount": rule.get('trigger_count', 0),
+    }
 
 class RuleCreate(BaseModel):
     name: str
@@ -156,7 +198,7 @@ class RuleCreate(BaseModel):
     webhookType: str
     throttleMinutes: int
 
-@app.post("/api/rules")
+@app.post("/api/rules", dependencies=[Depends(verify_token)])
 async def create_rule_endpoint(rule: RuleCreate):
     """创建新规则"""
     try:
@@ -181,14 +223,14 @@ async def create_rule_endpoint(rule: RuleCreate):
         }
         
         new_rule = create_rule(rule_data)
-        return {"rule": new_rule, "message": "规则创建成功"}
+        return {"rule": serialize_rule(new_rule), "message": "规则创建成功"}
     except Exception as e:
         return JSONResponse(
             {"error": f"创建规则失败: {str(e)}"},
             status_code=500
         )
 
-@app.delete("/api/rules/{rule_id}")
+@app.delete("/api/rules/{rule_id}", dependencies=[Depends(verify_token)])
 async def delete_rule_endpoint(rule_id: str):
     """删除规则"""
     try:
@@ -211,7 +253,7 @@ async def delete_rule_endpoint(rule_id: str):
             status_code=500
         )
 
-@app.post("/api/rules/{rule_id}/toggle")
+@app.post("/api/rules/{rule_id}/toggle", dependencies=[Depends(verify_token)])
 async def toggle_rule_endpoint(rule_id: str):
     """切换规则启用/禁用状态"""
     try:
@@ -222,7 +264,7 @@ async def toggle_rule_endpoint(rule_id: str):
         
         rule = toggle_rule(rule_id)
         if rule:
-            return {"rule": rule, "message": "规则状态已更新"}
+            return {"rule": serialize_rule(rule), "message": "规则状态已更新"}
         else:
             return JSONResponse(
                 {"error": "规则不存在"},

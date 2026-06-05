@@ -27,8 +27,8 @@ logger = logging.getLogger(__name__)
 
 import akshare as ak
 
-# 缓存目录
-CACHE_DIR = "lof_cache"
+# 缓存目录（与docker-compose挂载路径一致：/app/cache）
+CACHE_DIR = "cache"
 LOF_LIST_CACHE_FILE = os.path.join(CACHE_DIR, "lof_list_cache.json")
 
 # 页面配置
